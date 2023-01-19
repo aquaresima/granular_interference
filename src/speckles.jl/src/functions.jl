@@ -46,10 +46,16 @@ end
 ## Run a smoothing function that remove the noise
 function smoothen_t(matrix::Array{Int16,3}; t::Int)
     _x, _y, _t = size(matrix)
-    _matrix = zeros(_x,_y,_t)
+    z = rollmean(matrix[1,1,:], t)
+    _matrix = zeros(_x,_y,size(z)...)
     @inbounds @fastmath for n in 1:_x
         for m in 1:_y
-            _matrix[n,m,:] .= runmean(matrix[n,m,:], t)
+            z = rollmean(matrix[n,m,:], t)
+            try
+                _matrix[n,m,:] .= z
+            catch
+                @warn size(z), size(_matrix[n,m,:])
+            end
         end
     end
     return round.(Int16, _matrix)

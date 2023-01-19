@@ -1,3 +1,12 @@
+# Set path
+
+do_norm : true
+
+paths:
+  # video_npy :     "/run/media/cocconat/data/ownCloud_MPI/granulari/video_npy"
+  full_matrices : "/Volumes/ExtremeHD/granulari/full_matrices"
+  analysis : "/Users/cocconat/Documents/Research/projects/papers/granulari/granular_media/data/analysis"
+
 # Set coarsing dimensions
 coarse: 
     x : 10
@@ -5,6 +14,5 @@ coarse:
     times : [1,2,5, 10, 20, 40]
 
 fit:
-  func : :gaussian
-  mobilmean : 15
+  func : gaussian
   coarse_time : 5 

@@ -6,18 +6,18 @@ using Plots
 using HDF5
 using NPZ
 import YAML
+using RollingFunctions
 
 #
 paths = YAML.load_file(projectdir("paths.yml"))
 full_matrices  = paths["full_matrices"]
-analysis_path  = paths["analysis"]
 
 # Analysis of the temporal variance in order to select the best coarse-grain values. (slow ∼ 5 mins)
-data, _ = produce_or_load(full_matrices, filename=joinpath(analysis_path,"videos_properties.jld2")) do full_matrices
+data, _ = produce_or_load(full_matrices, filename=joinpath(full_matrices,"videos_properties.jld2")) do full_matrices
     file = joinpath(full_matrices,"V_0.00.h5")
     still_video = read(h5open(file))
     @info "Temporal variance analysis"
-    # vars = speckles.measure_temporal_variance(still_video)
+    vars = speckles.measure_temporal_variance(still_video)
     files = [joinpath(full_matrices,f)  for f in filter(endswith(".h5"),readdir(full_matrices))]
     full = read(h5open(joinpath(files[1]),"r")) |> x->x["matrix"][:,:,1]
     @show size(full)
