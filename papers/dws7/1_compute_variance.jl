@@ -9,11 +9,16 @@ import YAML
 using RollingFunctions
 
 #
-paths = YAML.load_file(projectdir("paths.yml"))
+conf = YAML.load_file(projectdir("conf.yml"))
+paths = conf["paths"]
 full_matrices  = paths["full_matrices"]
+analysis_path  = conf["do_norm"] ? paths["analysis"] : paths["analysis"] * "_no_norm" |> mkpath
+# size(load(joinpath(full_matrices,"V_0.00.h5"))["matrix"],3)/15/60
 
 # Analysis of the temporal variance in order to select the best coarse-grain values. (slow ∼ 5 mins)
-data, _ = produce_or_load(full_matrices, filename=joinpath(full_matrices,"videos_properties.jld2")) do full_matrices
+config = @strdict full_matrices 
+data, _ = produce_or_load(analysis_path, config, filename="videos_properties") do config
+    full_matrices = config["full_matrices"]
     file = joinpath(full_matrices,"V_0.00.h5")
     still_video = read(h5open(file))
     @info "Temporal variance analysis"
@@ -39,3 +44,4 @@ data, _ = produce_or_load(full_matrices, filename=joinpath(full_matrices,"videos
     return @strdict norm=norm_matrix variance = vars
 end
 
+data

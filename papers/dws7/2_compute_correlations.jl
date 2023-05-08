@@ -27,6 +27,7 @@ end
 coarse = conf["coarse"]
 x = coarse["x"]
 y = coarse["y"]
+frames = conf["frames"]
 times = coarse["times"]
 
 # Set filenames
@@ -53,8 +54,13 @@ data,_ = produce_or_load(analysis_path, config,filename=filename) do config
         _fid = lock(lk) do
             return  read(h5open(joinpath(file),"r"))
         end
+        if n>1
+            mat = shift_mat(_fid["matrix"])[:,:,1:frames]
+        else
+            mat = shift_mat(_fid["matrix"])[:,:,1:4500] ## noise only lasts 5min
+        end
         @info "$file loaded"
-        matrices[n] = Float32.(coarsen(norm .* shift_mat(_fid["matrix"]), x=x, y=y))
+        matrices[n] = Float32.(coarsen(norm .* mat, x=x, y=y))
         if do_norm
             @info "Normalizing"
                 matrices[n] = matrices[n] 
@@ -65,9 +71,10 @@ data,_ = produce_or_load(analysis_path, config,filename=filename) do config
     return @strdict matrices speeds x y
 end
 
+data["matrices"]
 
 ## Temporal coarsegrain
-data = tosymboldict(load(joinpath(analysis_path,coarse_file*".jld2")) |> dict2ntuple;)
+data = tosymboldict(load(joinpath(analysis_path,filename*".jld2")) |> dict2ntuple;)
 @unpack x,y, speeds, matrices= data
 for t in ProgressBar(times)
     file = temporal_file(filename,t)
@@ -94,9 +101,9 @@ data, _ = produce_or_load(times,filename=corr_file) do times
     correlations = Matrix{Array{Float64,3}}(undef,length(times), length(speeds))
     iter = ProgressBar(eachindex(times))
     for t in iter
-        temporal_file = joinpath(analysis_path,"$(filename)_$(times[t]).jld2")
+        file = joinpath(analysis_path,"$(filename)_$(times[t]).jld2")
         set_postfix(iter,Time="$(times[t])")
-        temp_matrix =load(temporal_file)["matrices"]
+        temp_matrix =load(file)["matrices"]
         temp_coarse =Vector{Array{Int16,3}}(undef,length(speeds))
         for k in eachindex(speeds)
             @debug  speeds[k], times[t]
