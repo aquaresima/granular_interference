@@ -86,7 +86,6 @@ function time_variance(matrix::Array{Int8,3})
     return variances
 end
 function compute_variance(matrix::Array{Float64,3})
-    return  mean(std(matrix, dims=3))
 end
 
 
@@ -124,18 +123,31 @@ Compute coarse-grained matrix for metapixel sizes 1->25 and compute the variance
 """
 function measure_temporal_variance(data)
     matrix = round.(Int16,(data["matrix"]))
-    speed = data["speed"]
     vars = zeros(25)
     Threads.@threads for x in 1:25
         m = coarsen(matrix, x=x,y=x)
-        v = compute_variance(m)
+        v = mean(std(m, dims=3)) 
         vars[x] = v
     end
     return vars
 end
 
-## Clean recordings
+function measure_snr(data)
+    matrix = round.(Int16,(data["matrix"]))
+    I_mean = zeros(25)
+    I_each = zeros(25)
+    Threads.@threads for x in 1:25
+        m = coarsen(matrix, x=x,y=x)
+        I = [mean(m[i,j,:]) for i in axes(m,1) for j in axes(m,2)]
+        σ = [std(m[i,j,:]) for i in axes(m,1) for j in axes(m,2)]
+        I_mean[x] = mean(I)/mean(σ)
+        I_each[x] = mean(I ./ σ)
+    end
+    return I_mean, I_each
+end
 
+
+## Clean recordings
 function get_spectrum(signal)
     # Number of points
     signal = signal .- mean(signal)
@@ -230,9 +242,13 @@ function clean_recordings(matrix)
     return clean_matrix
 end
 
-function shift_mat(mat)
+function shift_mat(mat, add=false)
 	a = Array{Int16}(mat)
-	a[a.<0] .= abs.(a[a.<0]) .+127
+    if add
+        a[a.<0] .= abs.(a[a.<0]) .+127
+    else
+        a[a.<0] .= a[a.<0] .+ 254
+    end
 	return a
 end
 
