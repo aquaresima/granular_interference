@@ -14,18 +14,18 @@ paths = YAML.load_file(projectdir("paths.yml"))
 videos = paths["video_npy"]
 
 @info "Load all the npy matrices"
-try 
-    (root,dirs,files) =  first(walkdir(videos))
-    speed_folders = filter(dir->startswith(dir,"V"),dirs)
+try
+    (root, dirs, files) = first(walkdir(videos))
+    speed_folders = filter(dir -> startswith(dir, "V"), dirs)
     for dir in speed_folders
-        file = joinpath(root,dir, "image_matrix.npy")
-        speed = parse(Float64,dir[3:end])
+        file = joinpath(root, dir, "image_matrix.npy")
+        speed = parse(Float64, dir[3:end])
         try
             _data = npzread(file)
-            target = joinpath(root,dir*".h5")
+            target = joinpath(root, dir * ".h5")
             isfile(target) && rm(target)
             h5open(target, "w") do fid
-                fid["matrix"]=_data
+                fid["matrix"] = _data
                 fid["speed"] = speed
             end
             println("loaded:", speed)
