@@ -1,12 +1,17 @@
 # Set path
-
-do_norm : true
-
 paths:
   # video_npy :     "/run/media/cocconat/data/ownCloud_MPI/granulari/video_npy"
   full_matrices : "/Volumes/ExtremeHD/datasets/granulari/full_matrices"
   analysis : "/Users/cocconat/Documents/Research/papers/GranularInterference/granular_media/data/analysis_8Nov_10k-end"
   plots : "plots"
+
+
+# Set beam normalization
+do_norm : true
+
+# Video info
+frames: 9900
+frame_rate: 15
 
 # Set coarsing dimensions
 coarse: 
@@ -14,9 +19,7 @@ coarse:
     y : 10
     times : [1,2,5, 10, 20, 40]
 
+# Set preferred fit and coars_time
 fit:
   func : gaussian
   coarse_time : 5 
-
-frames: 9900
-frame_rate: 15
