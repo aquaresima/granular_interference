@@ -319,6 +319,7 @@ p
 
 ##
 
+matrices[1]
 ## Figure SI6
 ## Verify that the image has an exponential distribution in light-intensity to verify the measure regard actual spekles. : Goodman Statistical Optics
 
@@ -343,8 +344,36 @@ savefig(intensity, plotsdir("SIFig6.pdf"))
 intensity
 
 
-# ##
+###
+speeds
+# N = findfirst(speeds.== "1.5")
+# for N in eachindex(speeds)
+    N=7
+matrix = shift_mat(load(joinpath(full_matrices,readdir(full_matrices)[N]))["matrix"][:,:,end-60*15+1:end]).*norm
+END = size(matrix,3)÷ 3
+i = 39
+plotfonts = Plots.font(15, "Monospace")
+anim = @animate for i ∈ 1:END
+    heatmap(matrix[:,:,i], c=:default, clims=(60,120), title="(ω = $(speeds[N]) s^-1) \nframe: $(i), time: $(round((i/15), digits=1))s", titlealign=:left, titlefont=plotfonts, xlabel="Pixel", ylabel="Pixel", margin=10Plots.mm, size=(700,900), )
+end
+gif(anim, "anim_fps15_speed-$(speeds[N])_default.gif", fps = 15)
+# end
 
+
+##
+@unpack correlations = corr_data
+for N in eachindex(speeds)
+# N = findfirst(speeds.== "1.0")
+    matrix = correlations[1,N]
+    i = 39
+    plotfonts = Plots.font(15, "Monospace")
+    anim = @animate for i ∈ 1:300
+        heatmap(matrix[:,:,i], c=:viridis, clims=(0,1), title="(ω = $(speeds[N]) s^-1) \nframe: $(i), time: $(round((i/15), digits=1))s", titlealign=:left, titlefont=plotfonts, xlabel="Metapixel", ylabel="Metapixel", margin=10Plots.mm, size=(700,900), colorbar_title="Autocorrelation", colorbar_titlefontsize=14)
+    end
+    gif(anim, "anim_fps15_corr-$(speeds[N])_default.gif", fps = 15)
+end
+
+##
 # v0 = read(h5open(string(full_matrices, "/V_0.00.h5")))["matrix"]
 
 # ##
