@@ -2,7 +2,7 @@ using DrWatson
 @quickactivate "granular_media"
 
 using Revise
-using speckles
+using GrInt
 using .HDF5
 import YAML
 using JLD2
@@ -13,7 +13,7 @@ using LaTeXStrings
 using StatsPlots
 using StatsBase
 using LsqFit
-import speckles: shift_mat
+import GrInt: shift_mat
 
 ##
 # Set the location of the folder and import all files.
@@ -99,7 +99,7 @@ if isfile(joinpath(full_matrices, file))
     file = files[N]
     _mat = read(h5open(joinpath(full_matrices, file), "r"))["matrix"]
     p = heatmap(
-        speckles.shift_mat(_mat, false)[:, :, 1000] .* norm,
+        GrInt.shift_mat(_mat, false)[:, :, 1000] .* norm,
         c=:greys,
         xticks=_xticks,
         yticks=_yticks,

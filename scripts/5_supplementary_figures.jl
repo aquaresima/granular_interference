@@ -2,7 +2,7 @@ using DrWatson
 @quickactivate "granular_media"
 
 using Revise
-using speckles
+using GrInt
 using .HDF5
 import YAML
 using JLD2
@@ -85,7 +85,7 @@ intensity = ones(256, 1)
 for x = 1:256
     intensity[x] = 256 - x
 end
-import speckles: shift_mat
+import GrInt: shift_mat
 
 metapixel_size = 16 / 42
 
@@ -382,12 +382,12 @@ end
 # p2 = histogram(x[1:10:end])
 # pa = plot(p1,p2, size=(800,400), title="Base")
 
-# x = speckles.shift_mat(v0, true)
+# x = GrInt.shift_mat(v0, true)
 # p1 = v0_mean = mean(x, dims=3)[:,:,1] |> heatmap
 # p2 = histogram(x[1:10:end])
 # pb = plot(p1,p2, size=(800,400), title="Abs and add")
 
-# x = speckles.shift_mat(v0, false)
+# x = GrInt.shift_mat(v0, false)
 # p1 = mean(x, dims=3)[:,:,1] |> heatmap
 # p2 = histogram(x[1:10:end])
 # pc = plot(p1,p2, size=(800,400), title="Abs only")

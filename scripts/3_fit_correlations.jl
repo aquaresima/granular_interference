@@ -2,7 +2,7 @@ using DrWatson
 @quickactivate "granular_media"
 
 using Revise
-using speckles
+using GrInt
 import YAML
 using JLD2
 using UnPack

@@ -1,8 +1,8 @@
-# speckles.jl
+# GrInt.jl
 
 This code base is using the Julia Language and [DrWatson](https://juliadynamics.github.io/DrWatson.jl/stable/)
 to make a reproducible scientific project named
-> speckles.jl
+> GrInt.jl
 
 To (locally) reproduce this project, do the following:
 

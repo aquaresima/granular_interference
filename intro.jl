@@ -1,5 +1,5 @@
 using DrWatson
-@quickactivate "speckles.jl"
+@quickactivate "GrInt.jl"
 
 println(
 """

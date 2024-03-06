@@ -2,13 +2,13 @@ using DrWatson
 @quickactivate "granular_media"
 
 using RollingFunctions
-using speckles
+using GrInt
 using Plots
 using HDF5
 using NPZ
 import YAML
 using RollingFunctions
-import speckles: shift_mat
+import GrInt: shift_mat
 using Statistics
 #
 conf = YAML.load_file(projectdir("conf.yml"))
@@ -30,8 +30,8 @@ data, fp = produce_or_load(
     file = joinpath(full_matrices, "V_0.00.h5")
     still_video = read(h5open(file))
     @info "Temporal variance analysis"
-    # vars = speckles.measure_temporal_variance(still_video)
-    # snr_mean, snr_each = speckles.measure_snr(still_video)
+    # vars = GrInt.measure_temporal_variance(still_video)
+    # snr_mean, snr_each = GrInt.measure_snr(still_video)
     files = [
         joinpath(full_matrices, f) for f in filter(endswith(".h5"), readdir(full_matrices))
     ]

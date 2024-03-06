@@ -2,12 +2,12 @@ using DrWatson
 @quickactivate "granular_media"
 
 using Revise
-using speckles
+using GrInt
 import YAML
 using JLD2
 using HDF5
 using ProgressBars
-import speckles: shift_mat, coarsen
+import GrInt: shift_mat, coarsen
 
 conf = YAML.load_file(projectdir("conf.yml"))
 # Set the location of the folder and import all files.
@@ -106,7 +106,7 @@ for t in ProgressBar(times)
     ) do matrices
         for k in eachindex(speeds)
             @debug "time: $t, speed: $(speeds[k])"
-            m = speckles.smoothen_t(round.(Int16, matrices[k]), t=t)
+            m = GrInt.smoothen_t(round.(Int16, matrices[k]), t=t)
             temp_coarse[k] = m
         end
         return @strdict matrices = temp_coarse speeds = speeds times = t
@@ -130,7 +130,7 @@ data, _ = produce_or_load(times, filename=corr_file, force=redo_analysis) do tim
         temp_coarse = Vector{Array{Int16,3}}(undef, length(speeds))
         for k in eachindex(speeds)
             @debug speeds[k], times[t]
-            m = speckles.compute_correlation(temp_matrix[k])
+            m = GrInt.compute_correlation(temp_matrix[k])
             correlations[t, k] = m
         end
     end

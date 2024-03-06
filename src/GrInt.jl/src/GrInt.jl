@@ -1,4 +1,4 @@
-module speckles
+module GrInt
     using HDF5
     using LinearAlgebra
     using StatsBase
@@ -10,4 +10,4 @@ module speckles
 
     export Logging, ProgressBars, RollingFunctions, HDF5
 
-end # module speckles
+end # module GrInt

@@ -20,7 +20,7 @@ StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 ThreadSafeDicts = "4239201d-c60e-5e0a-9702-85d713665ba7"
 UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
-speckles = "ffc60f57-ce30-4adc-ac97-903557242789"
+GrInt = "ffc60f57-ce30-4adc-ac97-903557242789"
 
 [compat]
 DrWatson = "2.9.1"
