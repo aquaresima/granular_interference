@@ -7,6 +7,7 @@ to make a reproducible scientific project named
 The code is meant to reproduce the results of the journal article:
 
 ___Shear profile in a dense packing of large grains___
+
 Alessio Quaresima, Andrea Plati, Andrea Gnoli, Alberto Petri
 
 The manuscript is under review and it is accessible on arXiv at the [link](https://arxiv.org/abs/2401.10062)
