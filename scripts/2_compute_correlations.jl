@@ -62,8 +62,8 @@ end
 data, _ = produce_or_load(
     analysis_path,
     config,
-    filename = filename,
-    force = redo_analysis,
+    filename=filename,
+    force=redo_analysis,
 ) do config
     files = [
         joinpath(full_matrices, f) for f in filter(endswith(".h5"), readdir(full_matrices))
@@ -82,7 +82,7 @@ data, _ = produce_or_load(
             mat = shift_mat(_fid["matrix"])[:, :, 1:4500] ## noise only lasts 5min
         end
         @info "$file loaded"
-        matrices[n] = Float32.(coarsen(norm .* mat, x = x, y = y))
+        matrices[n] = Float32.(coarsen(norm .* mat, x=x, y=y))
         speeds[n] = string(_fid["speed"])
         @info "$file coarsened"
     end
@@ -101,12 +101,12 @@ for t in ProgressBar(times)
     data, _ = produce_or_load(
         analysis_path,
         matrices,
-        filename = file,
-        force = redo_analysis,
+        filename=file,
+        force=redo_analysis,
     ) do matrices
         for k in eachindex(speeds)
             @debug "time: $t, speed: $(speeds[k])"
-            m = speckles.smoothen_t(round.(Int16, matrices[k]), t = t)
+            m = speckles.smoothen_t(round.(Int16, matrices[k]), t=t)
             temp_coarse[k] = m
         end
         return @strdict matrices = temp_coarse speeds = speeds times = t
@@ -120,12 +120,12 @@ end;
         Correlate signal
 ====================================#
 corr_file = joinpath(analysis_path, "$(filename)_correlations")
-data, _ = produce_or_load(times, filename = corr_file, force = redo_analysis) do times
+data, _ = produce_or_load(times, filename=corr_file, force=redo_analysis) do times
     correlations = Matrix{Array{Float64,3}}(undef, length(times), length(speeds))
     iter = ProgressBar(eachindex(times))
     for t in iter
         file = joinpath(analysis_path, "$(filename)_$(times[t]).jld2")
-        set_postfix(iter, Time = "$(times[t])")
+        set_postfix(iter, Time="$(times[t])")
         temp_matrix = load(file)["matrices"]
         temp_coarse = Vector{Array{Int16,3}}(undef, length(speeds))
         for k in eachindex(speeds)

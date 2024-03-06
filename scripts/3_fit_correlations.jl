@@ -50,10 +50,10 @@ function get_fits(data)
     global N_points
     tt = N_points
     return (
-        stretched = curve_fit(stretch_exp, 3tt:4tt, data[tt:2tt], [tt, 1.0]).param,
-        gaussian = curve_fit(gauss_exp, 1:tt, data[1:tt], [1.0]).param,
-        cosh = curve_fit(fit_cosh, 1:tt, data[1:tt], [1.0]).param,
-        half = halfheight(data),
+        stretched=curve_fit(stretch_exp, 3tt:4tt, data[tt:2tt], [tt, 1.0]).param,
+        gaussian=curve_fit(gauss_exp, 1:tt, data[1:tt], [1.0]).param,
+        cosh=curve_fit(fit_cosh, 1:tt, data[1:tt], [1.0]).param,
+        half=halfheight(data),
     )
 end
 
@@ -63,8 +63,8 @@ config = @strdict data = data functions = functions
 fits, _ = produce_or_load(
     analysis_path,
     config,
-    filename = "$(filename)_fits",
-    force = true,
+    filename="$(filename)_fits",
+    force=true,
 ) do config
     data = config["data"]
     functions = config["functions"]
@@ -85,7 +85,7 @@ fits, _ = produce_or_load(
     )
     for s in eachindex(speeds)
         for t in eachindex(times)
-            mysample = mean(correlations[t, s], dims = 2)[:, 1, :]
+            mysample = mean(correlations[t, s], dims=2)[:, 1, :]
             mysample_all = correlations[t, s]
             @info "Run fit $(speeds[s]) $(times[t]), matrix: $(size(mysample))"
             for y = 1:size(mysample)[1] # number of rows
@@ -110,7 +110,6 @@ end
 data = load(joinpath(analysis_path, "$(filename)_fits.jld2")) |> tosymboldict |> dict2ntuple;
 @unpack fits, fits_all, inverse_fits, times, speeds = data
 
-inverse_fits
 
 ##
 # using Plots
@@ -130,7 +129,7 @@ config = (@strdict func coarse_time) |> dict2ntuple
 
 name = savename(joinpath(analysis_path, filename), config, "jld2")
 isfile(name) && rm(name)
-data, _ = produce_or_load(analysis_path, config, prefix = filename, force = true) do config
+data, _ = produce_or_load(analysis_path, config, prefix=filename, force=true) do config
     @unpack func, coarse_time = config
     band = zeros(Int, 8, 5) # 9 speeds, 5 values, max, min, mean, errmin, errmax
     vals = Vector{Vector{Float64}}(undef, 8)
@@ -170,13 +169,13 @@ data, _ = produce_or_load(analysis_path, config, prefix = filename, force = true
         # diffs[s] = average
     end
     shearband = (
-        max = band[:, 1],
-        min = band[:, 2],
-        errmin = band[:, 3],
-        errmax = band[:, 4],
-        err = band[:, 5],
-        values = vals,
-        diffs = diffs,
+        max=band[:, 1],
+        min=band[:, 2],
+        errmin=band[:, 3],
+        errmax=band[:, 4],
+        err=band[:, 5],
+        values=vals,
+        diffs=diffs,
     )
     @show shearband.min
     return @strdict shearband = shearband func = func coarse_time = coarse_time #vals=vals

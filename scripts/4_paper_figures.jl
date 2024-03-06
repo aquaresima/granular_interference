@@ -73,13 +73,13 @@ myplotsdir(args...) = projectdir(plots_name, args...)
 
 gr()
 default(
-    guidefontsize = 18,
-    tickfontsize = 13,
-    titlefontsize = 15,
-    grid = false,
-    colorbar_tickfontsize = 13,
-    colorbar_titlefontsize = 18,
-    legendfontsize = 12,
+    guidefontsize=18,
+    tickfontsize=13,
+    titlefontsize=15,
+    grid=false,
+    colorbar_tickfontsize=13,
+    colorbar_titlefontsize=18,
+    legendfontsize=12,
 )
 
 intensity = ones(256, 1)
@@ -100,77 +100,77 @@ if isfile(joinpath(full_matrices, file))
     _mat = read(h5open(joinpath(full_matrices, file), "r"))["matrix"]
     p = heatmap(
         speckles.shift_mat(_mat, false)[:, :, 1000] .* norm,
-        c = :greys,
-        xticks = _xticks,
-        yticks = _yticks,
-        colorbar = false,
-        clims = (60, 120),
+        c=:greys,
+        xticks=_xticks,
+        yticks=_yticks,
+        colorbar=false,
+        clims=(60, 120),
     )
-    plot!(p, xlabel = "width (mm)", ylabel = "z (mm)", colorbar = false)
+    plot!(p, xlabel="width (mm)", ylabel="z (mm)", colorbar=false)
     layout = @layout [b a{0.7w} c{0.1w} _]
     plot!(
         twinx(),
-        ytick = (0:100:400, reverse(0:100:420)),
-        ylims = (-20, 400),
-        ylabel = "z (px)",
+        ytick=(0:100:400, reverse(0:100:420)),
+        ylims=(-20, 400),
+        ylabel="z (px)",
     )
     intensity_y = (range(0, 256, 5), range(60, 120, 5))
     q = heatmap(
         reverse(intensity[1:end, :]),
-        ymirror = true,
-        yticks = intensity_y,
-        c = :greys,
-        cbar = false,
-        xticks = :none,
-        ylabel = L"\langle" * "Pixel intensity" * L"\rangle",
-        box = :on,
-        grid = :off,
-        rotation = -45,
-        guidefontsize = 13,
-        topmargin = 10Plots.mm,
-        bottommargin = 10Plots.mm,
-        leftmargin = 10Plots.mm,
+        ymirror=true,
+        yticks=intensity_y,
+        c=:greys,
+        cbar=false,
+        xticks=:none,
+        ylabel=L"\langle" * "Pixel intensity" * L"\rangle",
+        box=:on,
+        grid=:off,
+        rotation=-45,
+        guidefontsize=13,
+        topmargin=10Plots.mm,
+        bottommargin=10Plots.mm,
+        leftmargin=10Plots.mm,
     )
     pp = plot(
-        [plot(frame = :none), p, q]...,
-        layout = layout,
-        plot_title = "speed: ω=$(speeds[N])",
+        [plot(frame=:none), p, q]...,
+        layout=layout,
+        plot_title="speed: ω=$(speeds[N])",
     )
     savefig(pp, myplotsdir("Fig2.pdf"))
     p = heatmap(
-        mean(shift_mat(_mat, false), dims = 3)[:, :, 1],
-        c = :greys,
-        xticks = _xticks,
-        yticks = _yticks,
-        colorbar = false,
-        clims = (70, 130),
+        mean(shift_mat(_mat, false), dims=3)[:, :, 1],
+        c=:greys,
+        xticks=_xticks,
+        yticks=_yticks,
+        colorbar=false,
+        clims=(70, 130),
     )
     layout = @layout [b a{0.7w} c{0.1w} _]
-    plot!(p, xlabel = "width (mm)", ylabel = "z (mm)", colorbar = false)
+    plot!(p, xlabel="width (mm)", ylabel="z (mm)", colorbar=false)
     plot!(
         twinx(),
-        ytick = (0:100:400, reverse(0:100:420)),
-        ylims = (-20, 400),
-        ylabel = "z (px)",
+        ytick=(0:100:400, reverse(0:100:420)),
+        ylims=(-20, 400),
+        ylabel="z (px)",
     )
     intensity_y = (range(0, 256, 5), range(70, 130, 5))
     q = heatmap(
         reverse(intensity[1:end, :]),
-        ymirror = true,
-        yticks = intensity_y,
-        c = :greys,
-        cbar = false,
-        xticks = :none,
-        ylabel = L"\langle" * "Pixel intensity" * L"\rangle",
-        box = :on,
-        grid = :off,
-        rotation = -45,
-        guidefontsize = 13,
-        topmargin = 10Plots.mm,
-        bottommargin = 10Plots.mm,
-        leftmargin = 10Plots.mm,
+        ymirror=true,
+        yticks=intensity_y,
+        c=:greys,
+        cbar=false,
+        xticks=:none,
+        ylabel=L"\langle" * "Pixel intensity" * L"\rangle",
+        box=:on,
+        grid=:off,
+        rotation=-45,
+        guidefontsize=13,
+        topmargin=10Plots.mm,
+        bottommargin=10Plots.mm,
+        leftmargin=10Plots.mm,
     )
-    pp = plot([plot(frame = :none), p, q]..., layout = layout)
+    pp = plot([plot(frame=:none), p, q]..., layout=layout)
     savefig(pp, myplotsdir("Fig2_not_norm.pdf"))
 else
     @warn "Figure 2 skipped. Enable 'run_long' "
@@ -186,21 +186,21 @@ plots = []
 if _run_long
     for (file, speed) in collect(zip(files, speeds))[[1, 3, 6, 9]]
         _mat = read(h5open(joinpath(full_matrices, file), "r"))["matrix"]
-        flat = StatsBase.mean(shift_mat(_mat, false), dims = 3)[:, :, 1]
+        flat = StatsBase.mean(shift_mat(_mat, false), dims=3)[:, :, 1]
         push!(
             plots,
             heatmap(
                 norm .* flat,
-                title = "ω = $speed (s⁻¹)",
-                c = :greys,
-                titlefontsize = 14,
-                xticks = _xticks,
-                yticks = _yticks,
-                clims = (50, 120),
+                title="ω = $speed (s⁻¹)",
+                c=:greys,
+                titlefontsize=14,
+                xticks=_xticks,
+                yticks=_yticks,
+                clims=(50, 120),
             ),
         )
         if length(plots) < 6
-            plot!(colorbar = false)
+            plot!(colorbar=false)
         end
     end
     plot(plots...)
@@ -209,21 +209,21 @@ if _run_long
     ]
     p = heatmap(
         reverse(intensity),
-        ymirror = true,
-        yticks = (range(0, 256, 5), range(50, 120, 5)),
-        c = :greys,
-        cbar = false,
-        xticks = :none,
-        ylabel = L"\langle" * "Pixel intensity" * L"\rangle",
-        box = :on,
-        grid = :off,
+        ymirror=true,
+        yticks=(range(0, 256, 5), range(50, 120, 5)),
+        c=:greys,
+        cbar=false,
+        xticks=:none,
+        ylabel=L"\langle" * "Pixel intensity" * L"\rangle",
+        box=:on,
+        grid=:off,
     )
     plot!(
         plots[3],
-        ylabel = "                   z (mm)",
-        xlabel = "                            width (mm)",
+        ylabel="                   z (mm)",
+        xlabel="                            width (mm)",
     )
-    mean_pixels = plot([plots...; p]..., layout = layout)
+    mean_pixels = plot([plots...; p]..., layout=layout)
     savefig(mean_pixels, myplotsdir("Fig3.pdf"))
 
     mean_pixels
@@ -238,44 +238,44 @@ N = 7
 file = files[N]
 # _mat = read(h5open(joinpath(full_matrices,file),"r"))["matrix"]
 
-my_corr = correlations[3,N][:,:,15]
+my_corr = correlations[3, N][:, :, 15]
 p = heatmap(
     my_corr,
     # 100 ./ fits_all[2, :, :, 3, 7],
-    c = :viridis,
-    xticks = _xticks,
-    yticks = _yticks,
-    colorbar = false,
-    clims = (0, 1.),
+    c=:viridis,
+    xticks=_xticks,
+    yticks=_yticks,
+    colorbar=false,
+    clims=(0, 1.0),
 )
-plot!(p, xlabel = "width (mm)", ylabel = "z (mm)", colorbar = false)
+plot!(p, xlabel="width (mm)", ylabel="z (mm)", colorbar=false)
 layout = @layout [b a{0.7w} c{0.1w} _]
 plot!(
     twinx(),
-    ytick = (0:100:400, reverse(0:10:42)),
-    ylims = (-20, 400),
-    ylabel = "z (metapixel)",
+    ytick=(0:100:400, reverse(0:10:42)),
+    ylims=(-20, 400),
+    ylabel="z (metapixel)",
 )
-intensity_y = (range(0, 256, 5), round.(range(0, 1., 5), digits = 2))
+intensity_y = (range(0, 256, 5), round.(range(0, 1.0, 5), digits=2))
 q = heatmap(
     reverse(intensity[1:end, :]),
-    ymirror = true,
-    yticks = intensity_y,
-    c = :viridis,
-    cbar = false,
-    xticks = :none,
+    ymirror=true,
+    yticks=intensity_y,
+    c=:viridis,
+    cbar=false,
+    xticks=:none,
     # ylabel = "Decorrelation time " * L"(s^{-1})",
-    ylabel = "Autocorrelation",
-    box = :on,
-    grid = :off,
-    rotation = -0,
-    guidefontsize = 13,
-    topmargin = 10Plots.mm,
-    bottommargin = 10Plots.mm,
-    leftmargin = 10Plots.mm,
+    ylabel="Autocorrelation",
+    box=:on,
+    grid=:off,
+    rotation=-0,
+    guidefontsize=13,
+    topmargin=10Plots.mm,
+    bottommargin=10Plots.mm,
+    leftmargin=10Plots.mm,
 )
 # annotate!((2., 1.1), text(L" \times 10^{-2}"))
-pp = plot([plot(frame = :none), p, q]..., layout = layout)
+pp = plot([plot(frame=:none), p, q]..., layout=layout)
 # plot!(plot_title="speed: ω=$(speeds[N])")
 savefig(pp, myplotsdir("Fig4.pdf"))
 pp
@@ -292,22 +292,22 @@ p = plot()
 for s in eachindex(speeds[1:end])
     s == 1 && continue
     @info "Plotting correlation for speed: $s, coarse_time: 1"
-    v = StatsBase.mean(correlations[1, s][25, :, 1:300], dims = 1)[:]
-    p = plot!(1:300, v, label = false, c = cs[s], lw = 4)
+    v = StatsBase.mean(correlations[1, s][25, :, 1:300], dims=1)[:]
+    p = plot!(1:300, v, label=false, c=cs[s], lw=4)
 end
 # plot!(ylims=(0,1.2), size=(800,600))
 p = plot(
     p,
-    xlabel = "Time (s)",
-    ylabel = "g(z,t)",
-    lw = 3,
-    xticks = (0:90:90*3, 0:6:18),
-    guidefontsize = 18,
-    tickfontsize = 13,
-    titlefontsize = 15,
-    grid = false,
-    yticks = (0:0.5:1, 0:0.5:1),
-    ylims = (-0.1, 1.5),
+    xlabel="Time (s)",
+    ylabel="g(z,t)",
+    lw=3,
+    xticks=(0:90:90*3, 0:6:18),
+    guidefontsize=18,
+    tickfontsize=13,
+    titlefontsize=15,
+    grid=false,
+    yticks=(0:0.5:1, 0:0.5:1),
+    ylims=(-0.1, 1.5),
 )
 annotate!((-0.15, 0.98), text("A", :center, 20, :black))
 
@@ -321,20 +321,20 @@ annotate!(
 speeds_z
 heatmap!(
     speeds_z[:, 2:end],
-    c = cs[2:end],
-    colorbar = false,
-    title = "ω (s⁻¹)",
-    yticks = :none,
-    titlefontsize = 13,
-    inset_subplots = bbox(0.65, 0.75, 0.3, 0.1, :bottom),
-    subplot = 2,
-    axes = false,
-    xticks = (1:2:8, speeds[[2:2:9; 9]]),
-    xrotation = -30,
+    c=cs[2:end],
+    colorbar=false,
+    title="ω (s⁻¹)",
+    yticks=:none,
+    titlefontsize=13,
+    inset_subplots=bbox(0.65, 0.75, 0.3, 0.1, :bottom),
+    subplot=2,
+    axes=false,
+    xticks=(1:2:8, speeds[[2:2:9; 9]]),
+    xrotation=-30,
 )
 #
 
-p0 = plot!(size = (800, 600), xlabel = "")
+p0 = plot!(size=(800, 600), xlabel="")
 zz = ones(1, 42)
 for x = 1:42
     zz[x] = 42 - x
@@ -344,20 +344,20 @@ cs = cgrad(:inferno, 1:PALETTE)[collect(1:PALETTE)./PALETTE]
 # speeds
 # times
 # correlations
-v = StatsBase.mean(correlations[1, 4][:, :, 1:300], dims = 2)[:, 1, :]
+v = StatsBase.mean(correlations[1, 4][:, :, 1:300], dims=2)[:, 1, :]
 p1 = plot(
     v',
-    c = cs',
+    c=cs',
     # xlims = (, 90 * 3),
-    legend = false,
-    title = "",
-    ylims = (-0.1, 1.6),
-    yticks = (0:0.5:1, 0:0.5:1),
-    xticks = (0:90:90*3, round.(Int, 0:6:6*3)),
-    xlabel = "Time (s)",
+    legend=false,
+    title="",
+    ylims=(-0.1, 1.6),
+    yticks=(0:0.5:1, 0:0.5:1),
+    xticks=(0:90:90*3, round.(Int, 0:6:6*3)),
+    xlabel="Time (s)",
 )
 
-plot!(topmargin = 5Plots.mm, ylabel = "g(z,t)")
+plot!(topmargin=5Plots.mm, ylabel="g(z,t)")
 annotate!((-0.15, 1), text("B", :center, 20, :black))
 annotate!(
     6 * 15,
@@ -371,56 +371,56 @@ annotate!(
 )
 heatmap!(
     zz,
-    c = cs,
-    colorbar = false,
-    yticks = :none,
-    xticks = (1:10:42, 0:4:16),
-    inset_subplots = bbox(0.65, 0.75, 0.3, 0.1, :bottom),
-    subplot = 2,
-    title = "z (mm)",
-    titlefontsize = 12,
-    ylabel = "",
+    c=cs,
+    colorbar=false,
+    yticks=:none,
+    xticks=(1:10:42, 0:4:16),
+    inset_subplots=bbox(0.65, 0.75, 0.3, 0.1, :bottom),
+    subplot=2,
+    title="z (mm)",
+    titlefontsize=12,
+    ylabel="",
 )
 
 #
 cs = cgrad(:inferno, 1:PALETTE)[collect(1:PALETTE)./PALETTE]
-v = StatsBase.mean(correlations[1, 4][:, :, 1:300], dims = 2)[:, 1, :]
-v2 = StatsBase.mean(correlations[3, 4][:, :, 1:300], dims = 2)[:, 1, :]
+v = StatsBase.mean(correlations[1, 4][:, :, 1:300], dims=2)[:, 1, :]
+v2 = StatsBase.mean(correlations[3, 4][:, :, 1:300], dims=2)[:, 1, :]
 p3 = plot(
     v',
-    c = cs',
-    xlims = (-1, 20),
-    legend = false,
-    title = "",
-    ylims = (-0.1, 1.5),
+    c=cs',
+    xlims=(-1, 20),
+    legend=false,
+    title="",
+    ylims=(-0.1, 1.5),
     # ylims = (-0.1, 1.6),
-    yticks = (0:0.5:1, 0:0.5:1),
-    ylabel = "g(z,t)",
-    xticks = (0:15:15, round.(Int, 0:15/15:15/15)),
-    xlabel = "Time (s)",
+    yticks=(0:0.5:1, 0:0.5:1),
+    ylabel="g(z,t)",
+    xticks=(0:15:15, round.(Int, 0:15/15:15/15)),
+    xlabel="Time (s)",
 )
 annotate!(p3, (-0.35, 1), text("C1", :center, 20, :black))
 annotate!(p3, 10, 1.45, text("raw data", :center, 15, :black))
 p4 = plot(
     v2',
-    c = cs',
-    xlims = (-1, 20),
-    legend = false,
-    title = "",
-    ylims = (-0.1, 1.5),
-    yticks = (0:0.5:1, 0:0.5:1),
-    ylabel = "g(z,t)",
-    xticks = (0:15:90, round.(Int, 0:15/15:90/15)),
-    xlabel = "Time (s)",
+    c=cs',
+    xlims=(-1, 20),
+    legend=false,
+    title="",
+    ylims=(-0.1, 1.5),
+    yticks=(0:0.5:1, 0:0.5:1),
+    ylabel="g(z,t)",
+    xticks=(0:15:90, round.(Int, 0:15/15:90/15)),
+    xlabel="Time (s)",
 )
 annotate!(p4, -5, 1.45, text("C2", :center, 20, :black))
 annotate!(p4, 11, 1.45, text("τ = 0.3 s", :center, 15, :black))
 
 
-p = plot(p3, p4, layout = (1, 2))
-decay = plot(p0, p1, p, layout = (3, 1))
+p = plot(p3, p4, layout=(1, 2))
+decay = plot(p0, p1, p, layout=(3, 1))
 
-plot!(size = (600, 800), leftmargin = 5Plots.mm)
+plot!(size=(600, 800), leftmargin=5Plots.mm)
 savefig(decay, myplotsdir("Fig5.pdf"))
 decay
 
@@ -434,26 +434,26 @@ argmax(mat)
 xx = axes(mat, 1)
 for p = 2:9
     # plot!(reverse(1:42), 100*mat[:,p], c=cs[p], legend=false)
-    scatter!(reverse(xx), 100 * mat[:, p], c = cs[p], legend = false, msc = cs[p], ms = 6)
+    scatter!(reverse(xx), 100 * mat[:, p], c=cs[p], legend=false, msc=cs[p], ms=6)
     # plot!(ylims=(0,0.20))
 end
-fit_all = plot!(ylabel = "ν" * L"_{C} (s^{-1})", xlabel = "z (mm)", title = " ")
+fit_all = plot!(ylabel="ν" * L"_{C} (s^{-1})", xlabel="z (mm)", title=" ")
 ll = maximum(mat * 100) * 1.09
 annotate!((-1.0, ll, text(L" \times 10^{-2}")))
-plot!(xticks = _xticks, xlabel = "z (mm)") ## z (mPixel)
-plot!(leftmargin = 5Plots.mm)
+plot!(xticks=_xticks, xlabel="z (mm)") ## z (mPixel)
+plot!(leftmargin=5Plots.mm)
 heatmap!(
     speeds_z[:, 1:8],
-    c = cs[2:9],
-    colorbar = false,
-    title = "ω (s⁻¹)",
-    yticks = :none,
-    titlefontsize = 13,
-    inset_subplots = bbox(0.65, 0.8, 0.3, 0.07, :bottom),
-    subplot = 2,
-    axes = false,
-    xticks = (1:2:8, speeds[[2:2:9;]]),
-    xrotation = -30,
+    c=cs[2:9],
+    colorbar=false,
+    title="ω (s⁻¹)",
+    yticks=:none,
+    titlefontsize=13,
+    inset_subplots=bbox(0.65, 0.8, 0.3, 0.07, :bottom),
+    subplot=2,
+    axes=false,
+    xticks=(1:2:8, speeds[[2:2:9;]]),
+    xrotation=-30,
 )
 savefig(p, myplotsdir("Fig6.pdf"))
 p
@@ -470,16 +470,16 @@ p1 = heatmap(
     speeds[2:end],
     xx,
     100 * mat,
-    c = :redsblues,
-    xlabel = "ω (s⁻¹)",
-    ylabel = "z (mm)",
-    yticks = (0:10:40, reverse(0:4:16)),
-    colorbar_title = "\nν" * L"_{C} (s^{-1})",
-    cbarfontsize = 12,
-    title = " ",
-    margin = 5Plots.mm,
-    rightmargin = 14Plots.mm,
-    xrotation = -45,
+    c=:redsblues,
+    xlabel="ω (s⁻¹)",
+    ylabel="z (mm)",
+    yticks=(0:10:40, reverse(0:4:16)),
+    colorbar_title="\nν" * L"_{C} (s^{-1})",
+    cbarfontsize=12,
+    title=" ",
+    margin=5Plots.mm,
+    rightmargin=14Plots.mm,
+    xrotation=-45,
 )
 annotate!((9.5, 48, text(L" \times 10^{-2}")))
 annotate!(-1.2, 50, text("A", :center, 20, :black))
@@ -490,20 +490,20 @@ p2 = heatmap(
     speeds[2:end],
     xx,
     mat,
-    c = :redsblues,
-    xlabel = "ω (s⁻¹)",
-    ylabel = "z (mm)",
-    yticks = (0:10:40, reverse(0:4:16)),
-    colorbar_title = "\nν" * L"_{H} (s^{-1})",
-    cbarfontsize = 12,
-    title = " ",
-    margin = 5Plots.mm,
-    rightmargin = 14Plots.mm,
-    xrotation = -45,
+    c=:redsblues,
+    xlabel="ω (s⁻¹)",
+    ylabel="z (mm)",
+    yticks=(0:10:40, reverse(0:4:16)),
+    colorbar_title="\nν" * L"_{H} (s^{-1})",
+    cbarfontsize=12,
+    title=" ",
+    margin=5Plots.mm,
+    rightmargin=14Plots.mm,
+    xrotation=-45,
 )
 annotate!(-1.2, 50, text("B", :center, 20, :black))
 # annotate!((10, 45, text(" x 10²")))
-p = plot(p1, p2, layout = (2, 1), size = (600, 800))
+p = plot(p1, p2, layout=(2, 1), size=(600, 800))
 savefig(p, myplotsdir("Fig7.pdf"))
 p
 
@@ -522,74 +522,74 @@ xs_min = [shearband.min[x] * metapixel_size - mp for x = 1:8]
 p0 = scatter(
     my_speeds[2:end],
     100 .* taus[1:end],
-    label = "",
-    c = :black,
-    ylabel = L"\nu_C^{max} (s^{-1})",
-    ms = 12,
-    xticks = :none,
-    topmargin = 10Plots.mm,
+    label="",
+    c=:black,
+    ylabel=L"\nu_C^{max} (s^{-1})",
+    ms=12,
+    xticks=:none,
+    topmargin=10Plots.mm,
 )
 annotate!((-0.28, 1.1), text("A", :center, 20, :black))
 annotate!(((-0.1, 1.1), text(L" \times 10^{-2}")))
 scatter!(
     [],
     [],
-    shape = :circle,
-    label = "",
-    c = :black,
-    msc = :black,
-    ms = 12,
-    fg_legend = :transparent,
-    legend = :topleft,
-    ylims = (0, 3),
+    shape=:circle,
+    label="",
+    c=:black,
+    msc=:black,
+    ms=12,
+    fg_legend=:transparent,
+    legend=:topleft,
+    ylims=(0, 3),
 )
-p1 = scatter(my_speeds[2:end], xs_max, label = "", c = :black, ms = 12, shape = :diamond)
+p1 = scatter(my_speeds[2:end], xs_max, label="", c=:black, ms=12, shape=:diamond)
 scatter!(
     p1,
     my_speeds[2:end],
     xs_min,
-    label = "",
-    yerror = shearband.err[2:end] * metapixel_size,
-    c = :black,
-    ylabel = "z (mm) ",
-    ms = 12,
-    shape = :star,
-    xlabel = "speed " * "ω (s⁻¹)",
+    label="",
+    yerror=shearband.err[2:end] * metapixel_size,
+    c=:black,
+    ylabel="z (mm) ",
+    ms=12,
+    shape=:star,
+    xlabel="speed " * "ω (s⁻¹)",
 )
 scatter!(
     [],
     [],
-    shape = :diamond,
-    label = " " * L"Z_{max}",
-    c = :black,
-    msc = :black,
-    ms = 12,
+    shape=:diamond,
+    label=" " * L"Z_{max}",
+    c=:black,
+    msc=:black,
+    ms=12,
 )
 scatter!(
     [],
     [],
-    shape = :star,
-    label = " " * L"Z_{B}",
-    c = :black,
-    msc = :black,
-    ms = 12,
-    fg_legend = :transparent,
-    legend = :topleft,
+    shape=:star,
+    label=" " * L"Z_{B}",
+    c=:black,
+    msc=:black,
+    ms=12,
+    fg_legend=:transparent,
+    legend=:topleft,
 )
-plot!(ylims = (-1, 18), yticks = (0:4:16))
+plot!(ylims=(-1, 18), yticks=(0:4:16))
 annotate!((-0.28, 1.1), text("B", :center, 20, :black))
 p = plot(
     p1,
-    layout = (1, 1),
-    xrotation = -45,
-    size = (00, 200),
-    rightmargin = 14Plots.mm,
-    xlims = (-0.2, 1.7),
-    bottommargin = 10Plots.mm,
-    leftmargin = 15Plots.mm,
-    legendfontsize = 16,
+    layout=(1, 1),
+    xrotation=-45,
+    size=(00, 200),
+    rightmargin=14Plots.mm,
+    xlims=(-0.2, 1.7),
+    bottommargin=10Plots.mm,
+    leftmargin=15Plots.mm,
+    legendfontsize=16,
 )
-plot!(size = (600, 500))
+plot!(size=(600, 500))
 savefig(p, myplotsdir("Fig8.pdf"))
 p
 
@@ -606,7 +606,7 @@ shift = 0.0
 ylims = (0.1, 1.2)
 
 for speed in eachindex(speeds)[2:end]
-    hline!([shift * speed], label = "", c = :black, alpha = 0.4, ls = :dash)
+    hline!([shift * speed], label="", c=:black, alpha=0.4, ls=:dash)
 end
 plots = []
 for speed in eachindex(speeds)[2:end]
@@ -627,39 +627,39 @@ fit_hhgg = curve_fit(linear, hh_max, gg_max, [1.0, 1.0])
 scatter!(
     hh_max,
     gg_max,
-    label = "",
-    xlabel = "H",
-    ylabel = "G",
-    c = cs[2:end],
-    msc = :auto,
-    ms = 10,
+    label="",
+    xlabel="H",
+    ylabel="G",
+    c=cs[2:end],
+    msc=:auto,
+    ms=10,
 )
 hh_max
 plot!(
-    ylabel = L"Z_{max} " * " from " * L"\nu_H" * "(mm)",
-    xlabel = L"Z_{max} " * " from " * L"\nu_C" * "(mm)",
-    c = :black,
-    ls = :dash,
-    margin = 5Plots.mm,
-    rightmargin = 14Plots.mm,
-    legend = :topleft,
-    bottommargin = 10Plots.mm,
-    topmargin = 10Plots.mm,
+    ylabel=L"Z_{max} " * " from " * L"\nu_H" * "(mm)",
+    xlabel=L"Z_{max} " * " from " * L"\nu_C" * "(mm)",
+    c=:black,
+    ls=:dash,
+    margin=5Plots.mm,
+    rightmargin=14Plots.mm,
+    legend=:topleft,
+    bottommargin=10Plots.mm,
+    topmargin=10Plots.mm,
 )
-p = plot!(x -> linear(x, fit_hhgg.param), label = "", c = :black, ls = :dash)
+p = plot!(x -> linear(x, fit_hhgg.param), label="", c=:black, ls=:dash)
 
 heatmap!(
     speeds_z[:, 2:end],
-    c = cs[2:9],
-    colorbar = false,
-    title = "ω (s⁻¹)",
-    yticks = :none,
-    titlefontsize = 13,
-    inset_subplots = bbox(0.6, 0.38, 0.3, 0.07, :bottom),
-    subplot = 2,
-    axes = false,
-    xticks = (1:2:8, speeds[[2:2:9; 9]]),
-    xrotation = -30,
+    c=cs[2:9],
+    colorbar=false,
+    title="ω (s⁻¹)",
+    yticks=:none,
+    titlefontsize=13,
+    inset_subplots=bbox(0.6, 0.38, 0.3, 0.07, :bottom),
+    subplot=2,
+    axes=false,
+    xticks=(1:2:8, speeds[[2:2:9; 9]]),
+    xrotation=-30,
 )
 savefig(p, myplotsdir("Fig9.pdf"))
 p
