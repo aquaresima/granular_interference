@@ -19,8 +19,10 @@ using NPZ
 # Set the location of the folder and import all files.
 conf = YAML.load_file(projectdir("conf.yml"))
 full_matrices = conf["paths"]["full_matrices"]
-analysis_path = conf["paths"]["analysis"]
+analysis_path = projectdir(conf["paths"]["analysis"])
+plots_name = conf["paths"]["plots"]
 @assert isdir(analysis_path)
+RAW_DATA = isdir(full_matrices)
 
 # Read coarse dimensions
 conf = YAML.load_file(projectdir("conf.yml"))
@@ -89,28 +91,28 @@ import GrInt: shift_mat
 
 metapixel_size = 16 / 42
 
-##
-files = readdir(full_matrices)
-file = string(joinpath(analysis_path, filename), ".jld2")
-speeds
-9_000 / 60 / 15
-matrices = []
-for x = 1:9
-    m = read(h5open(full_matrices * "/" * files[x], "r")["matrix"])
-    @info "Original size: $(size(m)), in minutes: $(size(m,3)/15/60)"
-    _mat = load(file)["matrices"][x]
-    @info "Processed size: $(size(_mat)), in minutes: $(size(_mat,3)/15/60)"
-    s = size(_mat, 3) / 15 / 60
-    push!(matrices, _mat)
+## Overview of the raw matrices and the processed ones 
+if RAW_DATA
+    files = readdir(full_matrices)
+    file = string(joinpath(analysis_path, filename), ".jld2")
+    speeds
+    9_000 / 60 / 15
+    matrices = []
+    for x = 1:9
+        m = read(h5open(full_matrices * "/" * files[x], "r")["matrix"])
+        @info "Original size: $(size(m)), in minutes: $(size(m,3)/15/60)"
+        _mat = load(file)["matrices"][x]
+        @info "Processed size: $(size(_mat)), in minutes: $(size(_mat,3)/15/60)"
+        s = size(_mat, 3) / 15 / 60
+        push!(matrices, _mat)
+    end
+    ##
+    plot()
+    for x = 1:9
+        plot!(mean(matrices[x] .+ 20 * x, dims = (1, 2))[1, 1, :])
+    end
+    plot!(size = (400, 1500), margin = 10Plots.mm)
 end
-##
-
-##
-plot()
-for x = 1:9
-    plot!(mean(matrices[x] .+ 20 * x, dims = (1, 2))[1, 1, :])
-end
-plot!(size = (400, 1500), margin = 10Plots.mm)
 
 
 ## Supplementary Figures
@@ -139,26 +141,25 @@ nn
 # print(size(inverse_fits))
 # print(speeds)
 
-@unpack variance = video_props
-default(
-    guidefontsize = 18,
-    legendfontsize = 15,
-    fg_color_legend = :transparent,
-    tickfontsize = 13,
-)
-p = plot(
-    variance .^ 2,
-    xlabel = "Metapixel size (pixels)",
-    ylabel = "< σ ",
-    lw = 4,
-    c = :black,
-    label = "Still wheel video",
-)
-plot!(x -> 1 / x * (maximum(variance)^2), ls = :dash, lw = 4, label = "1/x")
-# plot!(maximum(variance)*exp.(-collect(0:25)./10), xlabel="Metapixel size (pixels)", ylabel="Total variance", ls=:dash, lw=4, label="Exp. decay with\ncharacteristic lenght 10 MP")
-plot!(lw = 4)# yscale=:log,xscale=:log, legend=false)
-savefig(p, plotsdir("SIFig2.pdf"))
-p
+# @unpack variance = video_props
+# default(
+#     guidefontsize = 18,
+#     legendfontsize = 15,
+#     fg_color_legend = :transparent,
+#     tickfontsize = 13,
+# )
+# p = plot(
+#     variance .^ 2,
+#     xlabel = "Metapixel size (pixels)",
+#     ylabel = "< σ ",
+#     lw = 4,
+#     c = :black,
+#     label = "Still wheel video",
+# )
+# plot!(x -> 1 / x * (maximum(variance)^2), ls = :dash, lw = 4, label = "1/x")
+# # plot!(maximum(variance)*exp.(-collect(0:25)./10), xlabel="Metapixel size (pixels)", ylabel="Total variance", ls=:dash, lw=4, label="Exp. decay with\ncharacteristic lenght 10 MP")
+# plot!(lw = 4)# yscale=:log,xscale=:log, legend=false)
+# savefig(p, plotsdir("SIFig2.pdf"))
 
 ## Figure SI3
 PALETTE = 9
@@ -319,9 +320,8 @@ p
 
 ##
 
-matrices[1]
 ## Figure SI6
-## Verify that the image has an exponential distribution in light-intensity to verify the measure regard actual spekles. : Goodman Statistical Optics
+# Verify that the image has an exponential distribution in light-intensity to verify the measure regard actual spekles. : Goodman Statistical Optics
 
 speeds
 p = [
@@ -344,11 +344,9 @@ savefig(intensity, plotsdir("SIFig6.pdf"))
 intensity
 
 
-###
+## GIFs of grains movement
 speeds
-# N = findfirst(speeds.== "1.5")
-# for N in eachindex(speeds)
-    N=7
+N=7
 matrix = shift_mat(load(joinpath(full_matrices,readdir(full_matrices)[N]))["matrix"][:,:,end-60*15+1:end]).*norm
 END = size(matrix,3)÷ 3
 i = 39
@@ -360,10 +358,9 @@ gif(anim, "anim_fps15_speed-$(speeds[N])_default.gif", fps = 15)
 # end
 
 
-##
+## GIFs of correlation decay
 @unpack correlations = corr_data
 for N in eachindex(speeds)
-# N = findfirst(speeds.== "1.0")
     matrix = correlations[1,N]
     i = 39
     plotfonts = Plots.font(15, "Monospace")
@@ -372,75 +369,3 @@ for N in eachindex(speeds)
     end
     gif(anim, "anim_fps15_corr-$(speeds[N])_default.gif", fps = 15)
 end
-
-##
-# v0 = read(h5open(string(full_matrices, "/V_0.00.h5")))["matrix"]
-
-# ##
-# x  =v0
-# p1 = v0_mean = mean(x, dims=3)[:,:,1] |> heatmap
-# p2 = histogram(x[1:10:end])
-# pa = plot(p1,p2, size=(800,400), title="Base")
-
-# x = GrInt.shift_mat(v0, true)
-# p1 = v0_mean = mean(x, dims=3)[:,:,1] |> heatmap
-# p2 = histogram(x[1:10:end])
-# pb = plot(p1,p2, size=(800,400), title="Abs and add")
-
-# x = GrInt.shift_mat(v0, false)
-# p1 = mean(x, dims=3)[:,:,1] |> heatmap
-# p2 = histogram(x[1:10:end])
-# pc = plot(p1,p2, size=(800,400), title="Abs only")
-
-# a = Int16.(v0)
-# a[a.<0] .= a[a.<0] .+254
-# p1 = mean(a, dims=3)[:,:,1] |> heatmap
-# plot(pa,pb,pc, layout=(3,1), legend=false, size=(800,1200))
-# ##
-
-# scatter(hs[2:end],gs[2:end], label="", xlabel="H", ylabel="G")
-##
-
-# heatmap!(z, c=cs[1:end], colorbar=false, title="ω (s⁻¹)", yticks=:none, titlefontsize=13,
-#     inset_subplots = bbox(0.65, 0.8, 0.3, 0.07, :bottom), subplot=2, axes=false, xticks=(1:2:10, speeds[[2:2:9;9]]))
-# savefig(p, joinpath(results_path,"fig7_maxtau.pdf"))
-
-# cs = cgrad(:roma, 1:PALETTE)[collect(1:PALETTE) ./PALETTE]
-# taus_x = [42 - argmax(inverse_fits[:,2,x,5]) for x in 1:8]
-# taus = 100 .*[maximum(inverse_fits[:,2,x,5]) for x in 1:8]
-# p = scatter(taus_x, taus, label="", c=cs, msc=cs, ylabel="maximum ν (s⁻¹)", ms=12, xlabel="z (mm)")
-# plot!(xticks=(0:10:20, 0:4:8), legend=:topleft, xlims=(0:8))
-# heatmap!(z, c=cs[1:end], colorbar=false, title="ω (s⁻¹)", yticks=:none, titlefontsize=13,
-#     inset_subplots = bbox(0.65, 0.8, 0.3, 0.07, :bottom), subplot=2, axes=false, xticks=(1:2:10, speeds[[2:2:9;9]]))
-# savefig(p, joinpath(results_path,"fig7_maxtauinv.pdf"))
-# plot!(title=" ")
-# annotate!((0.65, 6.45, text(" x 10²")))
-
-# # scatter(1 ./inverse_fits[:,2,:,1])
-
-
-##
-# p = groupedbar(xticks=(1:8,string.(speeds)),[-shearband.max -shearband.min], bar_position=:stack,c=[:white cs[6] ], lc=:white, legend=false, ylabel= "z (mm)", xlabel="ω (s⁻¹)", guidefontsize=18, tickfontsize=13, grid=false, ylims=(-42,0),yticks=(reverse(-40:10:0), 0:4:16))
-# savefig(p, joinpath(results_path,"fig8_bars.pdf"))
-# ##
-# gr()
-# layout = @layout [
-# 			a{0.9w} _;_ c{0.0001h}
-# 			]
-# p = plot(parse.(Float64,speeds[2:end]), shearband.max, seriestypes=[:line, :scatter], c=:red, msc=:red , ms=8, labels=["" "z maximum"],  ylabel="z maximum (mm)", legend=:topleft)
-# p = plot!(twinx(), parse.(Float64,speeds[2:end]), shearband.min, ylabel="z shear (mm)", label=["" "z shear"], seriestypes=[:line, :scatter], c=:black, msc=:black, ms=8,  legend=:bottomright,xlabel="ω (s⁻¹)")
-# p =plot(p,plot(frame=:none),layout=layout)
-# savefig(p, joinpath(results_path,"fig8.pdf"))
-
-# ##
-# p = scatter(parse.(Float64,speeds[2:end]), maxima[2,:,5], label="Gaussian Exp. time avg", xlabel="ω (s⁻¹)", ylabel="z (mm)", c=:black, ms=8, shape=:square)
-# p = scatter!(parse.(Float64,speeds[2:end]), maxima[4,:,1], label="Half width Raw data", xlabel="ω (s⁻¹)", c=:red, msc=:red, ms=8)
-# plot!(yticks=(30:5:40, reverse(0:2:4)), legendfontsize=12, title=" ", )
-
-
-# savefig(p, joinpath(results_path,"fig9.pdf"))
-# p
-# ##
-# p = scatter(maxima[2,:,5], maxima[4,:,1], ylabel="Half width Raw data", xlabel="Gaussian Exp. time avg", c=:black, msc=:black, ms=8, label="")
-
-# savefig(p, joinpath(results_path,"fig9_regression.pdf"))

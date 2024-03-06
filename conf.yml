@@ -2,7 +2,7 @@
 paths:
   # video_npy :     "/run/media/cocconat/data/ownCloud_MPI/granulari/video_npy"
   full_matrices : "/Volumes/ExtremeHD/datasets/granulari/full_matrices"
-  analysis : "/Users/cocconat/Documents/Research/papers/GranularInterference/granular_media/data/analysis_8Nov_10k-end"
+  analysis : "data/data_paper_8Nov"
   plots : "plots"
 
 

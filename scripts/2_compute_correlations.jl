@@ -77,9 +77,9 @@ data, _ = produce_or_load(
             return read(h5open(joinpath(file), "r"))
         end
         if n > 1
-            mat = shift_mat(_fid["matrix"])[:, :, 1:end]
+            mat = shift_mat(_fid["matrix"])[:, :, end-frames:end]
         else
-            mat = shift_mat(_fid["matrix"])[:, :, 1:4500] ## noise only lasts 5min
+            mat = shift_mat(_fid["matrix"])[:, :, end-4500:end] ## noise only lasts 5min
         end
         @info "$file loaded"
         matrices[n] = Float32.(coarsen(norm .* mat, x=x, y=y))

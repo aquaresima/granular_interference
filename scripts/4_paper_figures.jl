@@ -15,13 +15,14 @@ using StatsBase
 using LsqFit
 import GrInt: shift_mat
 
-##
-# Set the location of the folder and import all files.
+# Import analysis and raw files. 
+#If raw files are missing sets  a flag.
 conf = YAML.load_file(projectdir("conf.yml"))
 full_matrices = conf["paths"]["full_matrices"]
-analysis_path = conf["paths"]["analysis"]
-@assert isdir(analysis_path)
+analysis_path = projectdir(conf["paths"]["analysis"])
 plots_name = conf["paths"]["plots"]
+@assert isdir(analysis_path)
+RAW_DATA = isdir(full_matrices)
 
 # Read coarse dimensions
 conf = YAML.load_file(projectdir("conf.yml"))
@@ -35,7 +36,7 @@ filename = "coarsen$(x)x$(y)"
 coarse_file = joinpath(analysis_path, "$filename.jld2")
 temporal_file(root, t) = joinpath(analysis_path, "$(root)_$t.jld2")
 
-# Data
+# Load data
 fit_params = conf["fit"]
 func = fit_params["func"]
 coarse_time = fit_params["coarse_time"]
@@ -55,6 +56,7 @@ functions = [:stretched, :gaussian, :cosh, :half]
 @unpack inverse_fits, fits = fits_data
 @unpack shearband = band_data
 @unpack norm = video_props
+@unpack correlations = corr_data
 keys(fits_data)
 
 # fits_file = joinpath(analysis_path,"coarsen10_fits.jld")
@@ -70,7 +72,6 @@ keys(fits_data)
                     Plots
 =================================================#
 myplotsdir(args...) = projectdir(plots_name, args...)
-
 gr()
 default(
     guidefontsize=18,
@@ -94,7 +95,8 @@ _yticks = (0:105:420, reverse(0:4:16))
 
 ## Main text Figure 2: sample of interference pattern
 N = 7
-if isfile(joinpath(full_matrices, file))
+if RAW_DATA
+    @assert isfile(joinpath(full_matrices, file))
     files = readdir(full_matrices)
     file = files[N]
     _mat = read(h5open(joinpath(full_matrices, file), "r"))["matrix"]
@@ -173,7 +175,7 @@ if isfile(joinpath(full_matrices, file))
     pp = plot([plot(frame=:none), p, q]..., layout=layout)
     savefig(pp, myplotsdir("Fig2_not_norm.pdf"))
 else
-    @warn "Figure 2 skipped. Enable 'run_long' "
+    @warn "Figure 2 skipped because raw data are missing. Verify the path: $(full_matrices)"
 end
 
 
@@ -183,7 +185,7 @@ end
 # Plot the average intensity of the interference pattern as a function of the rotation speed.
 xticks = (0:80:240, 0:3:9)
 plots = []
-if _run_long
+if RAW_DATA
     for (file, speed) in collect(zip(files, speeds))[[1, 3, 6, 9]]
         _mat = read(h5open(joinpath(full_matrices, file), "r"))["matrix"]
         flat = StatsBase.mean(shift_mat(_mat, false), dims=3)[:, :, 1]
@@ -228,16 +230,13 @@ if _run_long
 
     mean_pixels
 else
-    @warn "Figure 3 skipped. Enable 'run_long' "
+    @warn "Figure 3 skipped because raw data are missing. Verify the path: $(full_matrices)"
 end
 
 ## Main text Figure 4
 _xticks = (1:8:25, 0:3:9)
 _yticks = (1:10.2:42, reverse(0:4:16))
 N = 7
-file = files[N]
-# _mat = read(h5open(joinpath(full_matrices,file),"r"))["matrix"]
-
 my_corr = correlations[3, N][:, :, 15]
 p = heatmap(
     my_corr,
@@ -288,7 +287,6 @@ for x = 1:9
 end
 cs = cgrad(:roma, 1:9)[1/9:1/9:1]
 p = plot()
-@unpack correlations = corr_data
 for s in eachindex(speeds[1:end])
     s == 1 && continue
     @info "Plotting correlation for speed: $s, coarse_time: 1"
@@ -465,7 +463,6 @@ mat = inverse_fits[2, :, 3, 2:end]
 
 xx = axes(mat, 1)
 speeds[2:end]
-mat
 p1 = heatmap(
     speeds[2:end],
     xx,
